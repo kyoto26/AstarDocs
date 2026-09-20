@@ -14,7 +14,8 @@
     "react": "19.2.3",
     "react-native": "0.87.1",
     "react-native-safe-area-context": "^5.10.0",
-    "react-native-screens": "^4.28.0"
+    "react-native-screens": "^4.28.0",
+    "react-native-vision-camera": "^5.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -42,7 +43,7 @@
   "engines": {
     "node": ">= 22.11.0"
   },
- "lint-staged": {
+  "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
       "bash -c 'tsc --noEmit'"
