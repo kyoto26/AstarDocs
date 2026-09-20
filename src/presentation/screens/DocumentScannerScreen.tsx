@@ -1,19 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { HomeScreenProps } from '../../types/navigation';
+import { DocumentScannerScreenProps } from '../../types/navigation';
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+export const DocumentScannerScreen: React.FC<DocumentScannerScreenProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>AstarDocs</Text>
-      <Text style={styles.subtitle}>Escáner de documentos On-Device y Privado</Text>
+      <Text style={styles.title}>Escáner On-Device</Text>
+      <Text style={styles.subtitle}>Procesamiento local sin conexión a red</Text>
 
       <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('DocumentScanner')}
+        style={styles.cancelButton}
+        onPress={() => navigation.goBack()}
         activeOpacity={0.8}
       >
-        <Text style={styles.buttonText}>Escanear Documento</Text>
+        <Text style={styles.cancelButtonText}>Cancelar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#F8FAFC',
     marginBottom: 8,
@@ -39,16 +39,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 32,
   },
-  button: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 12,
-    elevation: 2,
+  cancelButton: {
+    backgroundColor: '#334155',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
   },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
+  cancelButtonText: {
+    color: '#F8FAFC',
+    fontSize: 14,
     fontWeight: '600',
   },
 });
