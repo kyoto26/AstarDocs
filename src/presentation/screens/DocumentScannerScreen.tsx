@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { DocumentScannerScreenProps } from '../../types/navigation';
@@ -6,12 +6,28 @@ import { DocumentScannerScreenProps } from '../../types/navigation';
 export const DocumentScannerScreen: React.FC<DocumentScannerScreenProps> = ({ navigation }) => {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
+  const camera = useRef<Camera>(null);
 
   useEffect(() => {
     if (!hasPermission) {
       requestPermission();
     }
   }, [hasPermission, requestPermission]);
+
+  const takePhoto = async (): Promise<void> => {
+    try {
+      if (camera.current == null) {
+        return;
+      }
+      const photo = await camera.current.takePhoto({
+        flash: 'off',
+        enableShutterSound: false,
+      });
+      console.log('photo.path:', photo.path);
+    } catch (error) {
+      console.error('Error al capturar la foto:', error);
+    }
+  };
 
   if (!hasPermission) {
     return (
@@ -47,12 +63,22 @@ export const DocumentScannerScreen: React.FC<DocumentScannerScreenProps> = ({ na
   return (
     <View style={styles.container}>
       <Camera
+        ref={camera}
         style={StyleSheet.absoluteFill}
         device={device}
         isActive={true}
+        photo={true}
       />
 
       <View style={styles.overlay}>
+        <TouchableOpacity
+          style={styles.shutterButton}
+          onPress={takePhoto}
+          activeOpacity={0.7}
+        >
+          <View style={styles.shutterInner} />
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.cancelButton}
           onPress={() => navigation.goBack()}
@@ -106,6 +132,23 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
+  },
+  shutterButton: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    marginBottom: 20,
+  },
+  shutterInner: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#FFFFFF',
   },
   cancelButton: {
     backgroundColor: 'rgba(15, 23, 42, 0.8)',
