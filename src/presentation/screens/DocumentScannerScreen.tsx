@@ -1,12 +1,23 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { DocumentScannerScreenProps } from '../../types/navigation';
+import { SaveDocumentUseCase } from '../../domain/usecases/SaveDocumentUseCase';
+import { LocalDocumentRepositoryImpl } from '../../infrastructure/repositories/LocalDocumentRepositoryImpl';
 
 export const DocumentScannerScreen: React.FC<DocumentScannerScreenProps> = ({ navigation }) => {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
   const camera = useRef<Camera>(null);
+
+  /**
+   * Initialize SaveDocumentUseCase with its implementation.
+   * In a real-world app, this would be managed by a Dependency Injection container.
+   */
+  const saveDocumentUseCase = useMemo(() => {
+    const repository = new LocalDocumentRepositoryImpl();
+    return new SaveDocumentUseCase(repository);
+  }, []);
 
   useEffect(() => {
     if (!hasPermission) {
@@ -14,18 +25,28 @@ export const DocumentScannerScreen: React.FC<DocumentScannerScreenProps> = ({ na
     }
   }, [hasPermission, requestPermission]);
 
+  /**
+   * Captures a photo and saves it to permanent local storage.
+   */
   const takePhoto = async (): Promise<void> => {
     try {
       if (camera.current == null) {
         return;
       }
+
       const photo = await camera.current.takePhoto({
         flash: 'off',
         enableShutterSound: false,
       });
-      console.log('photo.path:', photo.path);
+
+      console.log('Temporary photo path:', photo.path);
+
+      // Save the document permanently using the use case
+      const permanentPath = await saveDocumentUseCase.execute(photo.path);
+      console.log('Permanent document path:', permanentPath);
+      
     } catch (error) {
-      console.error('Error al capturar la foto:', error);
+      console.error('Error during photo capture or save:', error);
     }
   };
 
